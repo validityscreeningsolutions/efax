@@ -357,6 +357,122 @@ module EFaxOutboundTest
         assert_equal expected_xml.delete(" "), EFax::OutboundRequest.xml("I. P. Freely", "Moe's", "12345678901", "Subject", "<html><body><h1>Test</h1></body></html>").delete(" ")
       end
     end
+
+    def test_generate_xml_email_disposition
+      disposition = {
+        method: "EMAIL",
+        level: "BOTH",
+        emails: [
+          {
+            recipient: "Sample 1",
+            address: "sample1@example.com",
+          },
+          {
+            recipient: "Sample 2",
+            address: "sample2@example.com",
+          }
+        ]
+      }
+
+      expected_xml = <<-XML
+        <?xml version="1.0" encoding="UTF-8"?>
+          <OutboundRequest>
+            <AccessControl>
+              <UserName>Mike Rotch</UserName>
+              <Password>moes</Password>
+            </AccessControl>
+            <Transmission>
+              <TransmissionControl>
+                <Resolution>FINE</Resolution>
+                <Priority>NORMAL</Priority>
+                <SelfBusy>ENABLE</SelfBusy>
+                <FaxHeader>Subject</FaxHeader>
+              </TransmissionControl>
+            <DispositionControl>
+              <DispositionLevel>BOTH</DispositionLevel>
+              <DispositionMethod>EMAIL</DispositionMethod>
+              <DispositionEmails>
+                <DispositionEmail>
+                  <DispositionRecipient>Sample 1</DispositionRecipient>
+                  <DispositionAddress>sample1@example.com</DispositionAddress>
+                </DispositionEmail>
+                <DispositionEmail>
+                  <DispositionRecipient>Sample 2</DispositionRecipient>
+                  <DispositionAddress>sample2@example.com</DispositionAddress>
+                </DispositionEmail>
+              </DispositionEmails>
+            </DispositionControl>
+            <Recipients>
+              <Recipient>
+                <RecipientName>I. P. Freely</RecipientName>
+                <RecipientCompany>Moe's</RecipientCompany>
+                <RecipientFax>12345678901</RecipientFax>
+              </Recipient>
+            </Recipients>
+            <Files>
+              <File>
+                <FileContents>PGh0bWw+PGJvZHk+PGgxPlRlc3Q8L2gxPjwvYm9keT48L2h0bWw+</FileContents>
+                <FileType>html</FileType>
+              </File>
+            </Files>
+          </Transmission>
+        </OutboundRequest>
+      XML
+      EFax::Request.user = "Mike Rotch"
+      EFax::Request.password = "moes"
+      EFax::OutboundRequest.publicize_class_methods do
+        assert_equal expected_xml.delete(" "), EFax::OutboundRequest.xml("I. P. Freely", "Moe's", "12345678901", "Subject", "<html><body><h1>Test</h1></body></html>", :html, disposition).delete(" ")
+      end
+    end
+
+    def test_generate_xml_post_disposition
+      disposition = {
+        method: "POST",
+        level: "BOTH",
+        url: "https://test.example.com"
+      }
+
+      expected_xml = <<-XML
+        <?xml version="1.0" encoding="UTF-8"?>
+          <OutboundRequest>
+            <AccessControl>
+              <UserName>Mike Rotch</UserName>
+              <Password>moes</Password>
+            </AccessControl>
+            <Transmission>
+              <TransmissionControl>
+                <Resolution>FINE</Resolution>
+                <Priority>NORMAL</Priority>
+                <SelfBusy>ENABLE</SelfBusy>
+                <FaxHeader>Subject</FaxHeader>
+              </TransmissionControl>
+            <DispositionControl>
+              <DispositionLevel>BOTH</DispositionLevel>
+              <DispositionMethod>POST</DispositionMethod>
+              <DispositionURL>https://test.example.com</DispositionURL>
+            </DispositionControl>
+            <Recipients>
+              <Recipient>
+                <RecipientName>I. P. Freely</RecipientName>
+                <RecipientCompany>Moe's</RecipientCompany>
+                <RecipientFax>12345678901</RecipientFax>
+              </Recipient>
+            </Recipients>
+            <Files>
+              <File>
+                <FileContents>PGh0bWw+PGJvZHk+PGgxPlRlc3Q8L2gxPjwvYm9keT48L2h0bWw+</FileContents>
+                <FileType>html</FileType>
+              </File>
+            </Files>
+          </Transmission>
+        </OutboundRequest>
+      XML
+      EFax::Request.user = "Mike Rotch"
+      EFax::Request.password = "moes"
+      EFax::OutboundRequest.publicize_class_methods do
+        assert_equal expected_xml.delete(" "), EFax::OutboundRequest.xml("I. P. Freely", "Moe's", "12345678901", "Subject", "<html><body><h1>Test</h1></body></html>", :html, disposition).delete(" ")
+      end
+    end
   end
 
   class OutboundStatusTest < Test::Unit::TestCase

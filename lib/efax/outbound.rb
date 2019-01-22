@@ -63,7 +63,7 @@ module EFax
       OutboundResponse.new(response)
     end
 
-    def self.xml(name, company, fax_number, subject, content, content_type = :html)
+    def self.xml(name, company, fax_number, subject, content, content_type = :html, disposition = nil)
       xml_request = ""
       xml = Builder::XmlMarkup.new(:target => xml_request, :indent => 2 )
       xml.instruct! :xml, :version => '1.0'
@@ -80,7 +80,24 @@ module EFax
             xml.FaxHeader(subject)
           end
           xml.DispositionControl do
-            xml.DispositionLevel("NONE")
+            if disposition
+              xml.DispositionLevel(disposition[:level])
+              xml.DispositionMethod(disposition[:method])
+              if disposition[:method] == "EMAIL"
+                xml.DispositionEmails do
+                  disposition[:emails].each do |email|
+                    xml.DispositionEmail do
+                      xml.DispositionRecipient(email[:recipient]) if email[:recipient]
+                      xml.DispositionAddress(email[:address]) if email[:address]
+                    end
+                  end
+                end
+              elsif disposition[:method] == "POST"
+                xml.DispositionURL(disposition[:url])
+              end
+            else
+              xml.DispositionLevel("NONE")
+            end
           end
           xml.Recipients do
             xml.Recipient do
