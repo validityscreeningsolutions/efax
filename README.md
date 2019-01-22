@@ -74,3 +74,9 @@ describe InboundFax do
   end
 end
 ```
+
+## Development
+
+## Run tests:
+* `docker-compose up --build`
+* `bin/run_tests`

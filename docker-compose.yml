@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  rails:
+    build: .
+    volumes:
+      - bundle_cache:/bundle
+      - .:/app
+    environment:
+      - BUNDLER_VERSION=2.0.1
+      - BUNDLE_JOBS=5
+      - BUNDLE_PATH=/bundle
+      - BUNDLE_BIN=/bundle/bin
+      - GEM_HOME=/bundle
+      - DOCKER_CONTAINER=1
+    command:
+      - docker/start.sh
+
+volumes:
+  bundle_cache:
