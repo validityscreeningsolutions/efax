@@ -21,6 +21,45 @@ Sending an HTML page using eFax service is pretty simple:
 response = EFax::OutboundRequest.post(recipient_name, company_name, fax_number, subject, content)
 ```
 
+Sending an PDF page:
+
+```ruby
+response = EFax::OutboundRequest.post(recipient_name, company_name, fax_number, subject, content, :pdf)
+```
+
+Adding Dispositions:
+
+Dispositions are either a https endpoint or a set of email addresses for eFax to notify upon fax delivery or failure. Examples:
+
+HTTPs endpoint:
+```ruby
+disposition = {
+  method: "POST", # Send final results to URL. Options: [POST, EMAIL, NONE (default)]
+  level: "BOTH",  # Send success and error messages. Options: [ERROR | SUCCESS | BOTH | NONE (default)]
+  url: "https://test.example.com" # Note: URL has limit of 100 char, and any `&` will be converted to `&amp;`
+}
+response = EFax::OutboundRequest.post(recipient_name, company_name, fax_number, subject, content, :html, disposition)
+```
+
+Email:
+```ruby
+disposition = {
+  method: "EMAIL", # Send final results via email. Options: [POST, EMAIL, NONE (default)]
+  level: "BOTH", # Send success and error messages. Options: [ERROR | SUCCESS | BOTH | NONE (default)]
+  emails: [
+    {
+      recipient: "Sample 1", # Optional
+      address: "sample1@example.com",
+    },
+    {
+      recipient: "Sample 2", # Optional
+      address: "sample2@example.com",
+    }
+  ]
+}
+response = EFax::OutboundRequest.post(recipient_name, company_name, fax_number, subject, content, :html, disposition)
+```
+
 See `EFax::RequestStatus` class for details on status codes.
 
 
@@ -74,3 +113,9 @@ describe InboundFax do
   end
 end
 ```
+
+## Development
+
+## Run tests:
+* `docker-compose up --build`
+* `bin/run_tests`
