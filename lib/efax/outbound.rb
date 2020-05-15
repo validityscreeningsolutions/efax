@@ -23,6 +23,8 @@ module EFax
   # Prefered content type
   HEADERS  = {'Content-Type' => 'text/xml'}
 
+  OUTBOUND_RESOLUTION = ENV['EFAX_OUTBOUND_RESOLUTION'] || "FINE"
+
   # Base class for OutboundRequest and OutboundStatus classes
   class Request
     def self.user
@@ -74,7 +76,7 @@ module EFax
         end
         xml.Transmission do
           xml.TransmissionControl do
-            xml.Resolution("FINE")
+            xml.Resolution(OUTBOUND_RESOLUTION)
             xml.Priority("NORMAL")
             xml.SelfBusy("ENABLE")
             xml.FaxHeader(subject)
