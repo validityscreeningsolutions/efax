@@ -15,6 +15,7 @@ EFax::Request.account_id = <your account id>
 EFax::Request.user       = <your login>
 EFax::Request.password   = <your password>
 ```
+
 Sending an HTML page using eFax service is pretty simple:
 
 ```ruby
@@ -62,6 +63,17 @@ response = EFax::OutboundRequest.post(recipient_name, company_name, fax_number, 
 
 See `EFax::RequestStatus` class for details on status codes.
 
+Configuring Transmission:
+
+Transmission options may be set similarly to the basic account credentials, through the `TransmissionControlOptions` object. The default values are shown below.
+
+```ruby
+EFax::Request.transmission_control_options = EFax::TransmissionControlOptions.new(
+    resolution: 'FINE',
+    priority: 'NORMAL',
+    self_busy: 'ENABLE',
+)
+```
 
 Having ID of your request, you can get its current status:
 
