@@ -78,7 +78,6 @@ module EFax
     end
 
     def self.transmission_control_options
-      # @@transmission_control_options = default_transmission_control_options if @@transmission_control_options.nil?
       @@transmission_control_options ||= default_transmission_control_options
     end
     def self.transmission_control_options=(options)
