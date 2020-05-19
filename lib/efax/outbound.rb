@@ -31,6 +31,27 @@ module EFax
       @priority   = options[:priority] || 'NORMAL'
       @self_busy  = options[:self_busy] || 'ENABLE'
     end
+
+    def resolution
+      @resolution
+    end
+    def resolution=(resolution)
+      @resolution = resolution
+    end
+
+    def priority
+      @priority
+    end
+    def priority=(priority)
+      @priority = priority
+    end
+
+    def self_busy
+      @self_busy
+    end
+    def self_busy=(self_busy)
+      @self_busy = self_busy
+    end
   end
 
   # Base class for OutboundRequest and OutboundStatus classes
@@ -57,8 +78,8 @@ module EFax
     end
 
     def self.transmission_control_options
-      @@transmission_control_options = default_transmission_control_options if @@transmission_control_options.nil?
-      @@transmission_control_options
+      # @@transmission_control_options = default_transmission_control_options if @@transmission_control_options.nil?
+      @@transmission_control_options ||= default_transmission_control_options
     end
     def self.transmission_control_options=(options)
       @@transmission_control_options = options
@@ -95,9 +116,9 @@ module EFax
         end
         xml.Transmission do
           xml.TransmissionControl do
-            xml.Resolution(transmission_control_options.resolution)
-            xml.Priority(transmission_control_options.priority)
-            xml.SelfBusy(transmission_control_options.self_busy)
+            xml.Resolution(self.transmission_control_options.resolution)
+            xml.Priority(self.transmission_control_options.priority)
+            xml.SelfBusy(self.transmission_control_options.self_busy)
             xml.FaxHeader(subject)
           end
           xml.DispositionControl do
