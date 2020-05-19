@@ -23,6 +23,37 @@ module EFax
   # Prefered content type
   HEADERS  = {'Content-Type' => 'text/xml'}
 
+  OUTBOUND_RESOLUTION = ENV['EFAX_OUTBOUND_RESOLUTION'] || "FINE"
+
+  class TransmissionControlOptions
+    def initialize(options={})
+      @resolution = options[:resolution] || 'FINE'
+      @priority   = options[:priority] || 'NORMAL'
+      @self_busy  = options[:self_busy] || 'ENABLE'
+    end
+
+    def resolution
+      @resolution
+    end
+    def resolution=(resolution)
+      @resolution = resolution
+    end
+
+    def priority
+      @priority
+    end
+    def priority=(priority)
+      @priority = priority
+    end
+
+    def self_busy
+      @self_busy
+    end
+    def self_busy=(self_busy)
+      @self_busy = self_busy
+    end
+  end
+
   # Base class for OutboundRequest and OutboundStatus classes
   class Request
     def self.user
@@ -44,6 +75,16 @@ module EFax
     end
     def self.account_id=(id)
       @@account_id = id
+    end
+
+    def self.transmission_control_options
+      @@transmission_control_options ||= default_transmission_control_options
+    end
+    def self.transmission_control_options=(options)
+      @@transmission_control_options = options
+    end
+    def self.default_transmission_control_options
+      TransmissionControlOptions.new
     end
 
     def self.params(content)
@@ -74,9 +115,9 @@ module EFax
         end
         xml.Transmission do
           xml.TransmissionControl do
-            xml.Resolution("FINE")
-            xml.Priority("NORMAL")
-            xml.SelfBusy("ENABLE")
+            xml.Resolution(self.transmission_control_options.resolution)
+            xml.Priority(self.transmission_control_options.priority)
+            xml.SelfBusy(self.transmission_control_options.self_busy)
             xml.FaxHeader(subject)
           end
           xml.DispositionControl do

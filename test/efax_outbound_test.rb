@@ -159,7 +159,7 @@ module EFaxOutboundTest
       assert_equal EFax::QueryStatus::SENT, response.status_code
     end
 
-        def test_busy_response
+    def test_busy_response
       xml = <<-XML
         <?xml version="1.0"?>
         <OutboundStatusResponse>
@@ -471,6 +471,51 @@ module EFaxOutboundTest
       EFax::Request.password = "moes"
       EFax::OutboundRequest.publicize_class_methods do
         assert_equal expected_xml.delete(" "), EFax::OutboundRequest.xml("I. P. Freely", "Moe's", "12345678901", "Subject", "<html><body><h1>Test</h1></body></html>", :html, disposition).delete(" ")
+      end
+    end
+    def test_generate_xml_transmission_control_options
+      expected_xml = <<-XML
+        <?xml version="1.0" encoding="UTF-8"?>
+          <OutboundRequest>
+            <AccessControl>
+              <UserName>Mike Rotch</UserName>
+              <Password>moes</Password>
+            </AccessControl>
+            <Transmission>
+              <TransmissionControl>
+                <Resolution>STANDARD</Resolution>
+                <Priority>HIGH</Priority>
+                <SelfBusy>DISABLE</SelfBusy>
+                <FaxHeader>Subject</FaxHeader>
+              </TransmissionControl>
+            <DispositionControl>
+              <DispositionLevel>NONE</DispositionLevel>
+            </DispositionControl>
+            <Recipients>
+              <Recipient>
+                <RecipientName>I. P. Freely</RecipientName>
+                <RecipientCompany>Moe's</RecipientCompany>
+                <RecipientFax>12345678901</RecipientFax>
+              </Recipient>
+            </Recipients>
+            <Files>
+              <File>
+                <FileContents>PGh0bWw+PGJvZHk+PGgxPlRlc3Q8L2gxPjwvYm9keT48L2h0bWw+</FileContents>
+                <FileType>html</FileType>
+              </File>
+            </Files>
+          </Transmission>
+        </OutboundRequest>
+      XML
+      EFax::Request.user = "Mike Rotch"
+      EFax::Request.password = "moes"
+      EFax::Request.transmission_control_options = EFax::TransmissionControlOptions.new(
+        resolution: 'STANDARD',
+        priority: 'HIGH',
+        self_busy: 'DISABLE'
+      )
+      EFax::OutboundRequest.publicize_class_methods do
+        assert_equal expected_xml.delete(" "), EFax::OutboundRequest.xml("I. P. Freely", "Moe's", "12345678901", "Subject", "<html><body><h1>Test</h1></body></html>").delete(" ")
       end
     end
   end
