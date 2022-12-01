@@ -22,7 +22,14 @@
 # IN THE SOFTWARE.
 #++
 #
+module T
+  include Dry.Types()
+end
 
 require 'efax/version'
-require 'efax/outbound'
-require 'efax/inbound'
+require 'efax/disposition'
+require 'efax/transmission_control'
+require 'efax/client'
+require 'efax/outbound/request'
+require 'efax/outbound/status'
+# require 'efax/inbound'
