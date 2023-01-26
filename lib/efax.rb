@@ -22,6 +22,11 @@
 # IN THE SOFTWARE.
 #++
 #
+require 'dry-types'
+require 'dry-struct'
+require 'dry-initializer'
+require 'httparty'
+
 module T
   include Dry.Types()
 end
