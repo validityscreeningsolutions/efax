@@ -8,9 +8,10 @@ module EFax
       option :fax_number
       option :subject
       option :content
-      option :content_type, default: -> { :html }
-      option :disposition,  default: -> { Disposition.new }
-      option :tx_control,   default: -> { TransmissionControl.new }
+      option :content_encoded,  default: -> { false }
+      option :content_type,     default: -> { :html }
+      option :disposition,      default: -> { Disposition.new }
+      option :tx_control,       default: -> { TransmissionControl.new }
 
       def post
         response = self.class.send_request(xml)
@@ -58,13 +59,17 @@ module EFax
               }
               Files {
                 File {
-                  FileContents Base64.encode64(content).delete("\n")
+                  FileContents encoded_content
                   FileType     content_type.to_s
                 }
               }
             }
           }
         end.to_xml
+      end
+
+      def encoded_content
+        (content_encoded ? content : Base64.encode64(content)).delete("\n")
       end
     end
 

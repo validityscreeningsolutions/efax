@@ -15,7 +15,7 @@ module EFax
     class_attribute :account_id
 
     def self.params(content)
-      escaped_xml = ::URI.escape(content, Regexp.new("[^#{::URI::PATTERN::UNRESERVED}]"))
+      escaped_xml = ERB::Util.url_encode(content)
       "id=#{account_id}&xml=#{escaped_xml}&respond=XML"
     end
 
