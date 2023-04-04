@@ -7,8 +7,8 @@ module EFax
                             'NONE'    => :none)
 
     class Email < Dry::Struct
-      attribute :recipient, T::String
-      attribute :address, T::String
+      attribute :recipient?, T::String
+      attribute :address,    T::String
     end
 
     attribute  :level,  Levels

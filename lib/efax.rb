@@ -26,15 +26,19 @@ require 'dry-types'
 require 'dry-struct'
 require 'dry-initializer'
 require 'httparty'
+require 'nori'
 
 module T
   include Dry.Types()
 end
 
 require 'efax/version'
+require 'efax/string_utils'
 require 'efax/disposition'
 require 'efax/transmission_control'
 require 'efax/client'
+require 'efax/inbound/base'
+require 'efax/inbound/post_request'
 require 'efax/outbound/request'
 require 'efax/outbound/status'
-# require 'efax/inbound'
+require 'efax/outbound/disposition'
