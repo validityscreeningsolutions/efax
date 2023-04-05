@@ -7,9 +7,11 @@ module EFax
       option :company
       option :fax_number
       option :subject
-      option :content
-      option :content_encoded,  default: -> { false }
-      option :content_type,     default: -> { :html }
+      option :files, [] do
+        option :content
+        option :content_type,     default: -> { :html }
+        option :content_encoded,  default: -> { false }
+      end
       option :disposition,      default: -> { Disposition.new }
       option :tx_control,       default: -> { TransmissionControl.new }
 
@@ -58,17 +60,19 @@ module EFax
                 }
               }
               Files {
-                File {
-                  FileContents encoded_content
-                  FileType     content_type.to_s
-                }
+                files.each do |file|
+                  File {
+                    FileContents ensure_encoded_content(file.content, file.content_encoded)
+                    FileType     file.content_type.to_s
+                  }
+                end
               }
             }
           }
         end.to_xml
       end
 
-      def encoded_content
+      def ensure_encoded_content(content, content_encoded)
         (content_encoded ? content : Base64.encode64(content)).delete("\n")
       end
     end
