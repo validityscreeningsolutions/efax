@@ -73,7 +73,7 @@ module EFax
       end
 
       def ensure_encoded_content(content, content_encoded)
-        (content_encoded ? content : Base64.encode64(content)).delete("\n")
+        (content_encoded ? content : Base64.encode64(content))&.delete("\n")
       end
     end
 
